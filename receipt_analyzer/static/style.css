@@ -1,74 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #4a90e2;
+    --primary-hover-color: #357abd;
+    --background-color: #f7f8fc;
+    --card-background-color: #ffffff;
+    --text-color: #333;
+    --text-light-color: #6c757d;
+    --border-color: #e9ecef;
+    --shadow-color: rgba(0, 0, 0, 0.05);
+}
+
 body {
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    margin: 0;
-    padding: 0;
-    background-color: #f8f9fa;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin-top: 80px; /* To offset the fixed navbar */
 }
 
-/* Keep minimal custom styling; Bootstrap provides layout */
-
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
+.navbar {
+    background-color: var(--card-background-color);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px var(--shadow-color);
+    transition: background-color 0.3s ease;
 }
 
-.error {
-    color: red;
-    margin-bottom: 10px;
+.navbar-brand {
+    font-weight: 600;
+    color: var(--primary-color);
 }
 
-form {
+.nav-link {
+    font-weight: 500;
+    color: var(--text-light-color);
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--primary-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    font-weight: 500;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover-color);
+    border-color: var(--primary-hover-color);
+}
+
+.page-header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
-label {
-    margin-bottom: 5px;
+.page-header h1 {
+    font-weight: 700;
+    font-size: 2rem;
 }
 
-input,
-button {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 3px;
-    border: 1px solid #ccc;
+.filter-pills .btn-group {
+    background-color: var(--card-background-color);
+    border-radius: 50px;
+    padding: 5px;
+    box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-button { cursor: pointer; }
-
-.filters {
-    margin-bottom: 20px;
+.filter-pills .btn-outline-primary {
+    border-radius: 50px !important;
+    border: none;
+    font-weight: 500;
+    color: var(--text-light-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.filters a {
-    margin-right: 10px;
-    text-decoration: none;
-    color: #337ab7;
+.filter-pills .btn-outline-primary:hover {
+    background-color: var(--background-color);
+    color: var(--primary-color);
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+.filter-pills .btn-outline-primary.active {
+    background-color: var(--primary-color);
+    color: white;
 }
 
-thead {
-    background-color: #f2f2f2;
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    padding: 1.5rem;
+    height: 100%;
 }
 
-th,
-td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
+.table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
 }
 
-.summary { display: flex; justify-content: space-between; }
-
-.chart-container {
-    width: 45%;
+.table thead th {
+    border: none;
+    font-weight: 600;
+    color: var(--text-light-color);
+    padding: 1rem 1.5rem;
 }
 
-.totals {
-    width: 45%;
+.table tbody tr {
+    background-color: var(--card-background-color);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.table tbody tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.table tbody td {
+    border: none;
+    padding: 1.5rem;
+    vertical-align: middle;
+}
+
+.table tbody td:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.table tbody td:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.collapse-row {
+    background-color: #fdfdff;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+}
+
+#categoryChart {
+    max-height: 300px;
+}
+
+#categoryTotals {
+    list-style: none;
+    padding-left: 0;
+}
+
+#categoryTotals li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#categoryTotals li:last-child {
+    border-bottom: none;
 }
