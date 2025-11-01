@@ -1,22 +1,31 @@
-PS C:\Users\moham\Documents\PROGRAMMING\aws_tests\receipt_analyzer> python .\app.py
- * Serving Flask app 'app'
- * Debug mode: on
-2025-11-02 01:34:13,378 - INFO - WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on all addresses (0.0.0.0)
- * Running on http://127.0.0.1:5000
- * Running on http://10.120.67.73:5000
-2025-11-02 01:34:13,378 - INFO - Press CTRL+C to quit
-2025-11-02 01:34:13,390 - INFO -  * Restarting with watchdog (windowsapi)
-2025-11-02 01:34:14,223 - WARNING -  * Debugger is active!
-2025-11-02 01:34:14,229 - INFO -  * Debugger PIN: 139-330-937
-2025-11-02 01:34:15,339 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:15] "GET / HTTP/1.1" 302 -
-2025-11-02 01:34:16,947 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:16] "GET /dashboard HTTP/1.1" 200 -
-2025-11-02 01:34:17,024 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:17] "GET /static/style.css HTTP/1.1" 304 -
-2025-11-02 01:34:17,066 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:17] "GET /static/chart.js HTTP/1.1" 304 -
-2025-11-02 01:34:17,067 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:17] "GET /static/camera.js HTTP/1.1" 304 -
-2025-11-02 01:34:26,691 - ERROR - Error deleting receipt receipt_20251102_010159: An error occurred (ValidationException) when calling the GetItem operation: The provided key element does not match the schema
-2025-11-02 01:34:26,692 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:26] "POST /delete_receipt/receipt_20251102_010159 HTTP/1.1" 302 -
-2025-11-02 01:34:27,093 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:27] "GET /dashboard HTTP/1.1" 200 -
-2025-11-02 01:34:27,123 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:27] "GET /static/style.css HTTP/1.1" 304 -
-2025-11-02 01:34:27,149 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:27] "GET /static/chart.js HTTP/1.1" 304 -
-2025-11-02 01:34:27,149 - INFO - 127.0.0.1 - - [02/Nov/2025 01:34:27] "GET /static/camera.js HTTP/1.1" 304 -
+You are a development assistant working on a Flask-based web application hosted on an EC2 instance. 
+Your task is to make the website fully responsive and optimized for both desktop and mobile users 
+without removing or modifying any existing functionality or Flask logic.
+
+Context:
+- The app currently uses Flask templates with HTML and CSS (no JavaScript should be added).
+- The website includes templates such as `dashboard.html`, `upload.html`, and `login.html`.
+- It already works correctly on desktop, but needs to adjust automatically for mobile devices.
+
+Your objectives:
+1. Scan all HTML templates and associated CSS files for layout definitions and fixed widths.
+2. Make the site responsive using **CSS media queries only**.
+   - Ensure text, buttons, and cards resize cleanly for smaller screens.
+   - Use relative widths (%, vw) instead of fixed pixel widths wherever possible.
+   - Stack columns or grids vertically on narrow screens.
+3. Add viewport meta tag to all base templates if missing:
+   `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+4. Maintain all Flask placeholders, Jinja tags, routes, and backend connections exactly as they are.
+5. DO NOT add JavaScript, frameworks, or modify backend code.
+6. Optionally, enhance the visual appeal with subtle, elegant spacing, consistent padding, and smooth layout flow using modern CSS standards.
+7. Validate that the responsive design works across:
+   - Desktop (≥1024px)
+   - Tablet (768px–1023px)
+   - Mobile (≤767px)
+
+Output:
+- A modified set of HTML and CSS files implementing responsive layout.
+- A summary of all changes made (line-by-line or file-by-file).
+- Ensure backward compatibility so the design still renders properly on desktop browsers.
+
+Focus on elegance, simplicity, and maintaining functional stability of the existing Flask app.
