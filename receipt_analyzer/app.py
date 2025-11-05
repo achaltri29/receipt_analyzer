@@ -127,11 +127,7 @@ def upload():
                 receipt_id = filename.split('.')[0]
                 user = "local_user" # Hardcoded user for local use
                 now = datetime.now()
-                date_str = extracted_data[0].get('date')
-                try:
-                    date = datetime.strptime(date_str, '%d/%m/%Y').strftime('%Y-%m-%d') # Storing in YYYY-MM-DD
-                except (ValueError, TypeError):
-                    date = now.strftime('%Y-%m-%d')
+                date = now.strftime('%Y-%m-%d')
 
                 time = now.strftime('%H:%M:%S')
                 category = classification.get('category')

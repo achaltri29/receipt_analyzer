@@ -1,31 +1,75 @@
-You are a development assistant working on a Flask-based web application hosted on an EC2 instance. 
-Your task is to make the website fully responsive and optimized for both desktop and mobile users 
-without removing or modifying any existing functionality or Flask logic.
+import boto3
+import datetime
+import json
+from decimal import Decimal
+from boto3.dynamodb.conditions import Attr
 
-Context:
-- The app currently uses Flask templates with HTML and CSS (no JavaScript should be added).
-- The website includes templates such as `dashboard.html`, `upload.html`, and `login.html`.
-- It already works correctly on desktop, but needs to adjust automatically for mobile devices.
+# Initialize clients
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+sns = boto3.client('sns')
 
-Your objectives:
-1. Scan all HTML templates and associated CSS files for layout definitions and fixed widths.
-2. Make the site responsive using **CSS media queries only**.
-   - Ensure text, buttons, and cards resize cleanly for smaller screens.
-   - Use relative widths (%, vw) instead of fixed pixel widths wherever possible.
-   - Stack columns or grids vertically on narrow screens.
-3. Add viewport meta tag to all base templates if missing:
-   `<meta name="viewport" content="width=device-width, initial-scale=1.0">`
-4. Maintain all Flask placeholders, Jinja tags, routes, and backend connections exactly as they are.
-5. DO NOT add JavaScript, frameworks, or modify backend code.
-6. Optionally, enhance the visual appeal with subtle, elegant spacing, consistent padding, and smooth layout flow using modern CSS standards.
-7. Validate that the responsive design works across:
-   - Desktop (≥1024px)
-   - Tablet (768px–1023px)
-   - Mobile (≤767px)
+# Replace with your actual table name and SNS topic ARN
+TABLE_NAME = 'receipt_data'
+SNS_TOPIC_ARN = 'arn:aws:sns:us-east-1:614520203147:weekly-receipt-summary'
 
-Output:
-- A modified set of HTML and CSS files implementing responsive layout.
-- A summary of all changes made (line-by-line or file-by-file).
-- Ensure backward compatibility so the design still renders properly on desktop browsers.
+def lambda_handler(event, context):
+    print("Active region:", boto3.session.Session().region_name)
+    print("Available tables:")
+    for t in dynamodb.tables.all():
+        print(" -", t.name)
+    
+    table = dynamodb.Table(TABLE_NAME)
+    
+    # Define the start of the 7-day period
+    now = datetime.datetime.utcnow()
+    start_date = now - datetime.timedelta(days=7)
+    start_date_str = start_date.strftime('%Y-%m-%d')
 
-Focus on elegance, simplicity, and maintaining functional stability of the existing Flask app.
+    # Scan with a filter expression for the last 7 days
+    items = []
+    scan_kwargs = {
+        'FilterExpression': Attr('date').gte(start_date_str)
+    }
+
+    # Handle pagination
+    while True:
+        response = table.scan(**scan_kwargs)
+        items.extend(response['Items'])
+        if 'LastEvaluatedKey' not in response:
+            break
+        scan_kwargs['ExclusiveStartKey'] = response['LastEvaluatedKey']
+
+    # Categorize totals
+    summary = {}
+    for receipt in items:
+        category = receipt.get('category', 'Other')
+        amount = Decimal(receipt.get('total', 0))
+        summary[category] = summary.get(category, 0) + amount
+
+    # Format message
+    message = "🧾 Weekly Spending Summary\n\n"
+    if summary:
+        for cat, amt in sorted(summary.items()):
+            message += f"- {cat}: ${float(amt):.2f}\n"
+    else:
+        message += "No receipts found for this week.\n"
+    
+    total_spent = sum(summary.values())
+    message += f"\nTotal Spent: ${float(total_spent):.2f}"
+    message += f"\nTotal Receipts: {len(items)}"
+
+    # Publish to SNS
+    sns.publish(
+        TopicArn=SNS_TOPIC_ARN,
+        Subject="Weekly Receipt Report",
+        Message=message
+    )
+
+    return {
+        "statusCode": 200,
+        "body": json.dumps({
+            "status": "Report sent",
+            "receipt_count": len(items),
+            "total_spent": float(total_spent)
+        })
+    }
