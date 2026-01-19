@@ -1,89 +1,60 @@
-## Receipt Analyzer - AWS Configuration Notes
+# Serverless Smart Receipt Analyzer & Expense Categorizer
 
-Update your AWS resources to match the application settings. Replace placeholders in environment variables with your actual values.
+**Team:** CloudVision Pioneers  
+**Course:** Cloud Architecture Design (BCSE355L)  
+**Faculty:** Dr. Palani Thanaraj K
 
-### Required environment variables
+| Student Name | Registration No. |
+|:---|:---|
+| Mohammad Owais | 23BCE1746 |
+| Achal Pramod Tripathi | 23BCE1734 |
+| Abhay Singh | 23BCE1075 |
 
-Create a `.env` with the following keys (examples shown):
+---
 
-```
+## � Project Documentation
+This repository contains the source code and detailed documentation for the Smart Receipt Analyzer. Please refer to the specific guides below for in-depth configuration and setup details:
+
+### 🔹 [1. System Architecture & Network](docs/architecture.md)
+*   Hybrid Cloud Design Flow
+*   VPC Configuration (Subnets, Route Tables)
+*   Security Setup (IAM Roles, Security Groups)
+
+### 🔹 [2. Compute Setup (EC2)](docs/ec2_setup.md)
+*   Instance provisioning parameters (t2.micro, AMI)
+*   **Systemd Service** configuration for persistence
+*   Environment setup and dependencies
+
+### 🔹 [3. Data Storage (S3 & DynamoDB)](docs/data_storage.md)
+*   S3 Bucket security and Pre-signed URL workflow
+*   DynamoDB Table Schema and GSI Indexing for performance
+
+### 🔹 [4. AI Services (Textract & Bedrock)](docs/ai_integration.md)
+*   OCR workflow using Amazon Textract `AnalyzeExpense`
+*   Generative AI Classification prompt engineering with Claude 3 (Bedrock)
+
+---
+
+## �📜 Project Abstract
+The **Smart Receipt Analyzer** is a cloud-native web application designed to automate the expense tracking lifecycle. Hosted on a hybrid AWS architecture, it leverages **Amazon EC2** for the web interface and serverless AI services for backend processing.
+
+Users upload receipt images via a mobile-friendly Flask web app. The system automatically:
+1.  **Extracts Data**: Uses **Amazon Textract** (OCR) to read vendor names, dates, and totals.
+2.  **Categorizes Expenses**: Uses **Amazon Bedrock** (LLM) to intelligently classify transactions (e.g., "Groceries", "Dining").
+3.  **Stores Securely**: Saves images in a private **Amazon S3** bucket and metadata in **Amazon DynamoDB**.
+
+## 🚀 Quick Start
+To run this project locally or deploy it, please refer to the [Compute Setup Guide](docs/ec2_setup.md) for detailed installation instructions.
+
+### Environment Config
+Create a `.env` file with the following:
+```bash
 AWS_REGION=us-east-1
-S3_BUCKET=your-receipts-bucket-name
-DYNAMODB_TABLE=your-dynamodb-table-name
-
-COGNITO_USER_POOL_ID=us-east-1_example
-COGNITO_CLIENT_ID=your-client-id
-COGNITO_CLIENT_SECRET=your-client-secret
-COGNITO_DOMAIN=https://your-domain.auth.us-east-1.amazoncognito.com
-COGNITO_REDIRECT_URI=http://127.0.0.1:5000/authorize
-COGNITO_LOGOUT_REDIRECT_URI=http://127.0.0.1:5000/
-
-FLASK_SECRET_KEY=dev-secret
+S3_BUCKET=your-bucket
+DYNAMODB_TABLE=your-table
+FLASK_SECRET_KEY=secret
 BEDROCK_MODEL_ID=anthropic.claude-3-sonnet-20240229
 ```
 
-### Cognito Hosted UI setup
-1. In Amazon Cognito → User Pools → Your Pool → App client settings:
-   - Allowed callback URLs: include `http://127.0.0.1:5000/authorize` and/or your deployed domain `https://YOUR_DOMAIN/authorize`.
-   - Allowed sign-out URLs: include `http://127.0.0.1:5000/` and/or your deployed domain root.
-   - Enable OAuth flows used by the app (Authorization code) and scopes: `openid`, `email`, `phone`.
-2. In Domain name, set the Hosted UI domain and ensure it matches `COGNITO_DOMAIN`.
-
-### S3
-- Create bucket named by `S3_BUCKET` in `AWS_REGION`.
-- Objects are stored under prefix `user/{sub}/receipts/{filename}`. Ensure IAM allows `s3:PutObject`, `s3:GetObject`, and `s3:ListBucket` for the bucket and `/*`.
-
-### DynamoDB
-- Table name must match `DYNAMODB_TABLE`.
-- Attributes saved: `receipt_id` (PK if using simple table), `user`, `date`, `category`, `total`, `items`.
-- The app queries `IndexName='user-index'` on partition key `user` and (optionally) sort key `date`. Create a GSI named `user-index` with `user` as partition key and `date` as sort key (String/String).
-
-### Bedrock and Textract permissions
-Attach these permissions to the role running Flask (expand with your ARNs):
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "S3Access",
-      "Effect": "Allow",
-      "Action": ["s3:PutObject", "s3:GetObject", "s3:ListBucket"],
-      "Resource": [
-        "arn:aws:s3:::your-receipts-bucket-name",
-        "arn:aws:s3:::your-receipts-bucket-name/*"
-      ]
-    },
-    {
-      "Sid": "DynamoAccess",
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:PutItem",
-        "dynamodb:Query",
-        "dynamodb:GetItem",
-        "dynamodb:UpdateItem",
-        "dynamodb:BatchWriteItem"
-      ],
-      "Resource": "arn:aws:dynamodb:us-east-1:YOUR_ACCOUNT_ID:table/your-dynamodb-table-name"
-    },
-    {
-      "Sid": "TextractAccess",
-      "Effect": "Allow",
-      "Action": [
-        "textract:AnalyzeDocument",
-        "textract:StartDocumentAnalysis",
-        "textract:GetDocumentAnalysis"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Sid": "BedrockAccess",
-      "Effect": "Allow",
-      "Action": ["bedrock:InvokeModel"],
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-
+---
+*DA-3 Digital Assignment Submission*
